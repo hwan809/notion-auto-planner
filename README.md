@@ -1,6 +1,6 @@
 # notion-auto-planner
 
-Automatic study planner using Notion
+Automatic study planner using Notion | [instagram](https://www.instagram.com/study_bss/)
 
 ## Settings
 
