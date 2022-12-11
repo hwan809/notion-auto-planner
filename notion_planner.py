@@ -5,14 +5,14 @@ from datetime import datetime, timedelta
 
 from PIL import Image, ImageFont, ImageDraw
 
-token = 'secret_BMuvxz0YRJkx18w6Zhghz2vnkxWkRb8zg6fIVnDRRcO'
+token = $NOTION-TOKEN
 headers = {
     "Authorization": "Bearer " + token,
     "Notion-Version": "2022-06-28",
     "content-type": "application/json",
     
 }
-database_id = 'a588c20b16a74c54ab364040d5db5a6c'
+database_id = $DATABASE-ID
 
 read_url = f"https://api.notion.com/v1/databases/{database_id}/query"
 
