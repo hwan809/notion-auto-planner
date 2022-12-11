@@ -1,6 +1,7 @@
 import requests, json
 import time
 import random
+from datetime import datetime, timedelta
 
 from PIL import Image, ImageFont, ImageDraw
 
@@ -52,6 +53,12 @@ class Plan:
     def print(self):
         return self.has_finished, self.range, self.big_plan, self.subject, self.subject_type, self.emoji, self.time
 
+def yesterday(frmt='%Y-%m-%d', string=True):
+    yesterday = datetime.now() - timedelta(1)
+    if string:
+        return yesterday.strftime(frmt)
+    return yesterday
+
 def minutes_to_text(minutes):
     hour = minutes // 60
     minute = minutes % 60
@@ -85,16 +92,13 @@ def get_databases():
 def get_todays(databases):
     today_databases = []
 
-    today = time.strftime('%Y-%m-%d')
-
     for database in databases:
         for result in database["results"]:
             try:
-                if result["properties"]["계획 날짜"]["date"]["start"] == today:
+                if result["properties"]["계획 날짜"]["date"]["start"] == yesterday():
                     today_databases.append(result)
             except:
                 pass
-    
     return today_databases
 
 def get_plan_datas(today_databases):
@@ -127,19 +131,23 @@ def get_plan_datas(today_databases):
 
         today_plan = Plan(study_range, big_plan_name, study_subject_name, study_subject_type, study_subject_emoji, study_time, study_finished)
         today_plans.append(today_plan)
+
+        #print(today_plan.print())
     
     return today_plans
 
 def create_planner_img(plans):
     today = time.strftime('%y.%m.%d %a')
     d_day = 19
+
+    # TODO - get D-day 2f5ccc1cbfdf43caa5d9ec4a40e1f593
     study_time_sum = 0
 
     for plan in plans:
         if plan.time != None:
             study_time_sum += plan.time
 
-    background = Image.open(f'planner_png/{random.randint(1, 4)}.png')
+    background = Image.open(f'planner_png/{random.randint(1, 4)}.png').convert("RGB")
     
     font_2_B = ImageFont.truetype('fonts/2_B.ttf', 125)
     font_2_L = ImageFont.truetype('fonts/2_L.ttf', 60)
@@ -176,19 +184,28 @@ def create_planner_img(plans):
             draw.text((now_pointer[0] + 700, now_pointer[1]), 'X', (200, 40, 80), font=font_1_B)
 
         now_pointer = (now_pointer[0], now_pointer[1] + 70)
+        
+    #STICKERS
+    time_6h = Image.open('stickers/fire.png').convert('RGBA').rotate(15)
+    smile = Image.open('stickers/3.png').convert('RGBA')
 
-if __name__ == '__main__':
+    if study_time_sum > 60 * 6:
+        background.paste(time_6h, (1350, 320), time_6h)
+    background.paste(smile, (155, 395), smile)
+
+    f_location = f'my_planner/{time.strftime("%Y-%m-%d")}.jpg'
+    background.save(f_location)
+    return f_location
+
+def return_planner_img():
     databases = get_databases()
     today_databases = get_todays(databases)
-    plans = get_plan_datas(today_databases)
+    plans = get_plan_datas(today_databases) 
 
-    # plans = None
+    img = create_planner_img(plans)
+    return img
 
-    # with open(file='temp.pickle', mode='rb') as f:
-    #     plans = pickle.load(f)
+if __name__ == '__main__':
+    return_planner_img()
 
-    # for plan in plans:
-    #     print(plan.print())
-
-    create_planner_img(plans)
-
+    pass
