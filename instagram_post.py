@@ -19,7 +19,7 @@ def upload():
 
 if __name__ == '__main__':
     client = Client()
-    client.login('study_bss', 'maungbbol')
+    client.login($INSTAGRAM-ID, $INSTAGRAM-PASSWORD)
 
     upload()
 
